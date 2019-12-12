@@ -1,1 +1,5 @@
-## Spring Boot Project: Community Building
+## Spring Boot Project: Online Community
+This project is for new learner for Spring Boot to build a simple online community website.
+## Info
+spring website: https://spring.io/ \
+bootstrap chinese website: https://v3.bootcss.com/
