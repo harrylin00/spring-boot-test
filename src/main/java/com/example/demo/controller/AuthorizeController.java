@@ -9,31 +9,39 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 public class AuthorizeController {
 
     @Autowired
     private GithubProvider githubProvider;
 
-    @Value("$github.client.id")
+    @Value("${github.client.id}")
     private String client_id;
-    @Value("$github.client.secret")
+    @Value("${github.client.secret}")
     private String client_secret;
-    @Value("$github.redirect.url")
+    @Value("${github.redirect.url}")
     private String redirect_url;
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
-                           @RequestParam(name = "state") String state) {
+                           @RequestParam(name = "state") String state,
+                            HttpServletRequest request) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setCode(code);
         accessTokenDTO.setState(state);
         accessTokenDTO.setClient_id(client_id);
         accessTokenDTO.setClient_secret(client_secret);
         accessTokenDTO.setRedirect_uri(redirect_url);
-        String accessToken = githubProvider.getAccessToken(new AccessTokenDTO());
+        String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUserInfo(accessToken);
-        System.out.println(githubUser.getName());
-        return "index";
+        if(githubUser != null) {
+            //login in successful
+            request.getSession().setAttribute("user", githubUser);
+            return "redirect:/";
+        } else {
+            return "redirect:/";
+        }
     }
 }
